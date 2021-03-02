@@ -1,3 +1,4 @@
 # excludes the dataset files
 *.csv
-*.ipynb_checkpoints
+.ipynb_checkpoints/
+
