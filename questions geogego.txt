@@ -1,0 +1,18 @@
+
+
+
+1. it feels like everthing is a weak entity to collision, is that dumb ?  
+
+Because if there's no collision, nothing happens
+
+
+2. How to connect parties and victims (ternary or something else) ? because party_id and victim_id only make sense in the context of a case_id so they are connected by case_id but you can't identify between a party and a victim even in the same case_id.
+
+
+3. officer ID, a unique ID ?
+
+
+4. Q9 deliverable, how not to double-count ?( a party is also a victim but we can't identify it)
+ 
+
+5. parties can be any age (pedestrian age 8)
