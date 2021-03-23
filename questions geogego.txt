@@ -16,3 +16,8 @@ Because if there's no collision, nothing happens
  
 
 5. parties can be any age (pedestrian age 8)
+
+
+6. we have a lot of weak entities / entities connected to collisions and others, should we make a separate table for each or just merge everthing in ? 
+
+Because it feels like we are making an ER model to finally have only 3 tables in play. 
