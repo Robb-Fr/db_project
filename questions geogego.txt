@@ -21,3 +21,7 @@ Because if there's no collision, nothing happens
 6. we have a lot of weak entities / entities connected to collisions and others, should we make a separate table for each or just merge everthing in ? 
 
 Because it feels like we are making an ER model to finally have only 3 tables in play. 
+
+
+
+Do we put back everything into collision or keep information separate in different tables (because if multiple conditions (road_conditon and location), then we need to do 2 joins instead of having all the info in collisions)
