@@ -15,11 +15,14 @@
 
 # Collision csv :
 
-collision_date: OK
 collision_severity : OK
+
 collision_time : some values are NaN
+
 county_city_location: OK
+
 hit_and_run: 1 value with NaN, we may drop it if needed
+
 jurisdiction: OK
 
 pcf_violation_category: "Driving or Bicycling Under the Influence of Alcohol or Drug" = "dui"
