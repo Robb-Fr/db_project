@@ -93,7 +93,7 @@ vehicle_make and vehicle_year: 5.8% of vehicle makes are missing, should we repl
 # Victims csv :
 
 
-party_age: 3.5% of values are missing, may be interesting to replace by mean or median
+victim_age: 3.5% of values are missing, may be interesting to replace by mean or median
 
 victim_ejected: already encoded
 
