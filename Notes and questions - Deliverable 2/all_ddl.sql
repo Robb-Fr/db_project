@@ -85,9 +85,8 @@ create table Collision_In_Weather
 create table party
 (
     party_id                     INTEGER,
-    UNIQUE (party_id),
+    CONSTRAINT PARTY_PK primary key (party_id),
     party_number                 INTEGER,
-    CONSTRAINT PARTY_PK primary key (case_id, party_number),
     at_fault                     NUMBER(1) default 0 not null CHECK (at_fault >= 0 AND at_fault < 2),
     cellphone_use                CHAR CHECK ( cellphone_use IN ('B', 'C', 'D') ),
     financial_responsibility     CHAR CHECK ( financial_responsibility IN ('N', 'Y', 'O', 'E') ),
@@ -112,10 +111,8 @@ create table party
 
 create table Party_Equipped_With
 (
-    case_id          CHAR(25)                                       NOT NULL,
-    party_number     INTEGER                                       NOT NULL,
-    constraint PARTY_EQUIPPED_WITH_PARTY_CASE_ID_PARTY_NUMBER_FK
-        foreign key (case_id, party_number)
+    party_id         INTEGER
+        constraint PARTY_EQUIPPED_WITH_PARTY_PARTY_ID_FK
             references PARTY
                 on delete cascade,
     safety_equipment CHAR CHECK ( safety_equipment IN
@@ -125,12 +122,11 @@ create table Party_Equipped_With
 
 create table Associated_to
 (
-    case_id                 CHAR(25)                                         NOT NULL,
-    party_number            INTEGER                                          NOT NULL,
-    constraint
-        ASSOCIATED_TO_PARTY_PARTY_ID_FK foreign key (case_id, party_number)
-        references PARTY
-            on delete cascade,
+    party_id                INTEGER
+        constraint
+            ASSOCIATED_TO_PARTY_PARTY_ID_FK
+            references PARTY
+                on delete cascade,
     other_associated_factor CHAR(1) CHECK ( other_associated_factor IN
                                             ('A', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
                                              'T', 'U', 'V', 'W', 'X', 'Y') ) NOT NULL
@@ -150,10 +146,8 @@ create table victim
                                           'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4',
                                           '5', '6', '7', '8', '9', '0') ),
     victim_sex              CHAR CHECK ( victim_sex IN ('M', 'F') ),
-    case_id                 CHAR(25) not null,
-    party_number            INTEGER  not null,
-    constraint VICTIM_PARTY_CASE_ID_PARTY_NUMBER_FK
-        foreign key (case_id, party_number) references PARTY on delete cascade
+    party_id                INTEGER
+        constraint VICTIM_PARTY_ID_FK references PARTY on delete cascade
 );
 
 create table Victim_Equipped_With
