@@ -66,7 +66,7 @@ create table Collision
 
 create table Collision_In_Road_Conditions
 (
-    road_conditions CHAR(1) CHECK ( road_conditions IN ('A', 'B', 'C', 'D', 'E', 'F', 'G') ) NOT NULL,
+    road_conditions CHAR(1) CHECK ( road_conditions IN ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H') ) NOT NULL,
     case_id         CHAR(25)
         constraint COLLISION_IN_ROAD_CONDITION_COLLISION_CASE_ID_FK
             references COLLISION
