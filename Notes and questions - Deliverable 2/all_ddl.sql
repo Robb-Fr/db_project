@@ -2,7 +2,7 @@ create table Vehicle
 (
     statewide_vehicle_type CHAR(1) CHECK (statewide_vehicle_type IN
                                           ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O')),
-    vehicle_make           CHAR(20),
+    vehicle_make           CHAR(30),
     vehicle_year           NUMBER(4),
     vehicle_id             INTEGER
         constraint VEHICLE_PK
