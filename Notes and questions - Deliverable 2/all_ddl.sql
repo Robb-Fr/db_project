@@ -128,7 +128,8 @@ create table Associated_to
             references PARTY
                 on delete cascade,
     other_associated_factor CHAR(1) CHECK ( other_associated_factor IN
-                                            ('A', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+                                            ('A', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+                                             'S',
                                              'T', 'U', 'V', 'W', 'X', 'Y') ) NOT NULL
 );
 
