@@ -122,17 +122,28 @@ WHERE num_cities_per_type >= num_cities/2;
 6. For each of the top-3 most populated cities, show the city location, population, and the bottom-10
 collisions in terms of average victim age (show collision id and average victim age).
 
-PAS ENCORE FINI
 
-select city_code, population, C.CASE_ID, avg(VICTIM_AGE) over (partition by C.CASE_ID) as avg_age
-FROM  ((COLLISION C INNER JOIN (select COUNTY_CITY_LOCATION as city_code,POPULATION as population FROM LOCATION
-order by decode(POPULATION,'7',10, '6',9,'5',8,
-    '4',7,'3',6,'2',5,'1',4,'9',3,'0',2,NULL, 1) DESC
-FETCH FIRST 3 rows only) on C.COUNTY_CITY_LOCATION = city_code) INNER JOIN PARTY P on P.CASE_ID = C.CASE_ID) INNER JOIN
-    VICTIM V on v.PARTY_ID= p.PARTY_ID
-order by avg(VICTIM_AGE) over (partition by CASE_ID)
-FETCH first 10 rows only;
 
+select temporary.CASE_ID, temporary.avg_age, temporary.population, temporary.city_code
+    FROM
+         (select COUNTY_CITY_LOCATION as city_code,POPULATION as population FROM LOCATION
+                order by decode(POPULATION,'7',10, '6',9,'5',8,
+                '4',7,'3',6,'2',5,'1',4,'9',3,'0',2,NULL, 1) DESC
+                FETCH FIRST 3 rows only ) top_cities
+CROSS APPLY
+(select city_code, population, temporary.CASE_ID,
+           AVG(VICTIM_AGE) over (partition by temporary.CASE_ID) AS avg_age
+    FROM
+         (((COLLISION C INNER JOIN
+             (select COUNTY_CITY_LOCATION as city_code,POPULATION as population FROM LOCATION
+                order by decode(POPULATION,'7',10, '6',9,'5',8,
+                '4',7,'3',6,'2',5,'1',4,'9',3,'0',2,NULL, 1) DESC
+                FETCH FIRST 3 rows only)
+             on C.COUNTY_CITY_LOCATION = city_code) INNER JOIN PARTY P on P.CASE_ID = C.CASE_ID) INNER JOIN
+        VICTIM V on v.PARTY_ID= p.PARTY_ID) temporary
+            WHERE temporary.city_code = top_cities.city_code
+            order by  avg(VICTIM_AGE) over (partition by temporary.CASE_ID)
+            FETCH FIRST 10 rows only) temporary;
 
 
 7. Find all collisions that satisfy the following: the collision was of type pedestrian and all victims were above
@@ -175,3 +186,22 @@ between 18:00 and 19:59 in the period September 1 - March 31; and dawn between 0
 and dusk between 20:00 and 21:59 in the period April 1 - August 31. The remaining corresponding times
 are night and day. Display the number of accidents, and to which group it belongs, and make your
 conclusion based on absolute number of accidents in the given 4 periods.
+
+
+BESOIN DE TROUVER COMMENT EXTRAIRE HEURE SINON C'EST BON
+
+SELECT count(*) num_collisions, time
+FROM
+(select (CASE
+WHEN R.LIGHTING = 'A'
+THEN 'day'
+    WHEN R.LIGHTING IN ('C','D','E')
+    THEN 'night'
+    -- winter hour
+    WHEN (extract(month from C.COLLISION_DATE) >= 9 OR  extract(month from C.COLLISION_DATE) <= 3) THEN 'dawn'
+
+END) AS time , C.CASE_ID
+FROM COLLISION C, ROAD R
+WHERE C.ROAD_ID = R.ROAD_ID)
+group by time;
+
