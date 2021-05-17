@@ -48,12 +48,77 @@ order by AGE_GROUP;
 
 2. Find the top-5 vehicle types based on the number of collisions on roads with holes. List both the vehicle
 type and their corresponding number of collisions.
+
+comme Maëlys
+
+SELECT V.vehicle_make, COUNT(*)
+FROM Vehicle V, COLLISION_IN_ROAD_CONDITIONS CiR, COLLISION C, PARTY P
+WHERE C.case_id=CiR.case_id AND CiR.road_condition = 'A' AND C.case_id=P.case_id AND P.vehicle_id = V.vehicle_id
+GROUP BY V.vehicle_make
+ORDER BY COUNT(*) DESC
+FETCH FIRST 5 ROWS ONLY
+
 3. Find the top-10 vehicle makes based on the number of victims who suffered either a severe injury or
 were killed. List both the vehicle make and their corresponding number of victims.
+
+comme Maëlys
+
+SELECT V.vehicle_make, COUNT(*)
+FROM VICTIM V, PARTY P, VEHICLE Ve
+WHERE V.case_id = P.case_id AND V.party_number = P.party_number AND P.vehicle_id= Ve.vehicle_id AND (V.victim_degree_of_injury = '1' OR V.victim_degree_of_injury = '2')
+GROUP BY V.vehicle_make
+ORDER BY COUNT(*) DESC
+FETCH FIRST 10 ROWS ONLY
+
+
 4. Compute the safety index of each seating position as the fraction of total incidents where the victim
 suffered no injury. The position with the highest safety index is the safest, while the one with the lowest
 is the most unsafe. List the most safe and unsafe victim seating position along with its safety index.
+
+(select sum(case when v.VICTIM_DEGREE_OF_INJURY = '0' THEN 1 ELSE 0 END)/count(*) AS Ratio, VW.SAFETY_EQUIPMENT
+from VICTIM_EQUIPPED_WITH VW, VICTIM V
+WHERE v.VICTIM_ID = VW.VICTIM_ID
+group by VW.SAFETY_EQUIPMENT
+order by Ratio DESC
+FETCH FIRST 1 ROW ONLY)
+UNION ALL
+(select sum(case when v.VICTIM_DEGREE_OF_INJURY = '0' THEN 1 ELSE 0 END)/count(*) AS Ratio, VW.SAFETY_EQUIPMENT
+from VICTIM_EQUIPPED_WITH VW, VICTIM V
+WHERE v.VICTIM_ID = VW.VICTIM_ID
+group by VW.SAFETY_EQUIPMENT
+order by Ratio ASC
+FETCH FIRST 1 ROW ONLY);
+
+
+OU ALORS
+
+select
+max(Ratio) keep (dense_rank last order by Ratio) as MAX_RATIO,
+max(SAFETY_EQUIPMENT) keep ( dense_rank last order by Ratio ) as BEST_SAFETY,
+min(Ratio) keep (dense_rank first order by Ratio) as MIN_RATIO,
+min(SAFETY_EQUIPMENT) keep ( dense_rank first order by Ratio ) as WORST_SAFETY
+from (select sum(case when v.VICTIM_DEGREE_OF_INJURY = '0' THEN 1 ELSE 0 END)/count(*) AS Ratio, VW.SAFETY_EQUIPMENT
+from VICTIM_EQUIPPED_WITH VW, VICTIM V
+WHERE v.VICTIM_ID = VW.VICTIM_ID
+group by VW.SAFETY_EQUIPMENT
+order by Ratio DESC)
+
+
+
+
 5. How many vehicle types have participated in at least 10 collisions in at least half of the cities?
+
+select count(*) FROM
+    (select STATEWIDE_VEHICLE_TYPE,count(num_collisions) as num_cities_per_type, (select count(*) from LOCATION) as num_cities
+    FROM
+            (select STATEWIDE_VEHICLE_TYPE, count(*) as num_collisions
+            FROM ((VEHICLE V INNER JOIN PARTY P on V.VEHICLE_ID = P.VEHICLE_ID) INNER JOIN COLLISION C on C.CASE_ID = P.PARTY_ID)
+            GROUP BY V.STATEWIDE_VEHICLE_TYPE,C.COUNTY_CITY_LOCATION)
+    where num_collisions >=10
+    group by STATEWIDE_VEHICLE_TYPE)
+WHERE num_cities_per_type >= num_cities/2;
+
+
 6. For each of the top-3 most populated cities, show the city location, population, and the bottom-10
 collisions in terms of average victim age (show collision id and average victim age).
 7. Find all collisions that satisfy the following: the collision was of type pedestrian and all victims were above
