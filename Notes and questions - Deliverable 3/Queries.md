@@ -113,22 +113,62 @@ select count(*) FROM
     FROM
             (select STATEWIDE_VEHICLE_TYPE, count(*) as num_collisions
             FROM ((VEHICLE V INNER JOIN PARTY P on V.VEHICLE_ID = P.VEHICLE_ID) INNER JOIN COLLISION C on C.CASE_ID = P.PARTY_ID)
-            GROUP BY V.STATEWIDE_VEHICLE_TYPE,C.COUNTY_CITY_LOCATION)
-    where num_collisions >=10
+            GROUP BY V.STATEWIDE_VEHICLE_TYPE,C.COUNTY_CITY_LOCATION
+                HAVING count(*) >= 10)
     group by STATEWIDE_VEHICLE_TYPE)
 WHERE num_cities_per_type >= num_cities/2;
 
 
 6. For each of the top-3 most populated cities, show the city location, population, and the bottom-10
 collisions in terms of average victim age (show collision id and average victim age).
+
+PAS ENCORE FINI
+
+select city_code, population, C.CASE_ID, avg(VICTIM_AGE) over (partition by C.CASE_ID) as avg_age
+FROM  ((COLLISION C INNER JOIN (select COUNTY_CITY_LOCATION as city_code,POPULATION as population FROM LOCATION
+order by decode(POPULATION,'7',10, '6',9,'5',8,
+    '4',7,'3',6,'2',5,'1',4,'9',3,'0',2,NULL, 1) DESC
+FETCH FIRST 3 rows only) on C.COUNTY_CITY_LOCATION = city_code) INNER JOIN PARTY P on P.CASE_ID = C.CASE_ID) INNER JOIN
+    VICTIM V on v.PARTY_ID= p.PARTY_ID
+order by avg(VICTIM_AGE) over (partition by CASE_ID)
+FETCH first 10 rows only;
+
+
+
 7. Find all collisions that satisfy the following: the collision was of type pedestrian and all victims were above
 100 years old. For each of the qualifying collisions, show the collision id and the age of the eldest collision
 victim.
+
+select c.CASE_ID, max(VICTIM_AGE)
+FROM COLLISION C, PARTY P, VICTIM V
+WHERE C.CASE_ID= P.CASE_ID AND P.PARTY_ID = V.PARTY_ID
+AND C.TYPE_OF_COLLISION = 'G'
+GROUP BY C.CASE_ID
+HAVING min(VICTIM_AGE) > 100;
+
 8. Find the vehicles that have participated in at least 10 collisions. Show the vehicle id and number of
 collisions the vehicle has participated in, sorted according to number of collisions (descending order).
 What do you observe?
+
+comme Maëlys
+
+SELECT P.vehicle_id, COUNT(*) AS number_of_collision
+FROM PARTY P
+GROUP BY P.vehicle_id
+HAVING COUNT(*) >= 10
+ORDER BY COUNT(*) DESC
+
 9. Find the top-10 (with respect to number of collisions) cities. For each of these cities, show the city
 location and number of collisions.
+
+comme Maëlys
+
+SELECT C.county_city_location, COUNT(*)
+FROM COLLISION C
+GROUP BY C.county_city_location
+ORDER BY COUNT(*) DESC
+FETCH FIRST 10 ROWS ONLY
+
 10. Are there more accidents around dawn, dusk, during the day, or during the night? In case lighting
 information is not available, assume the following: the dawn is between 06:00 and 07:59, and dusk
 between 18:00 and 19:59 in the period September 1 - March 31; and dawn between 04:00 and 06:00,
