@@ -1,0 +1,28 @@
+faire attention au count(*)
+
+
+collision_in_weather, what is the primary key ? or do we need one ?
+
+
+what do you mean by the feedback on query 7 deliverable 2 ? It looks because of our star schema we need to do that.
+
+
+is query 8 of deliverable 2 too nested ? it would be so much more simple to have 2 queries.
+
+
+
+what is the best option for the query 4 in deliverable 3 ?
+
+
+
+
+What do you think are the best queries to optimize considering our star schema ?
+
+
+is query 5 too nested ?
+
+
+how the fuck do you query 6 ? it's hard bruh
+
+
+are count(*) in query 8 correct ?

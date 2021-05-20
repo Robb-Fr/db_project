@@ -13,7 +13,7 @@ Aliases can be used only if they were introduced in the preceding step. So alias
 7.HAVING
 8.SELECT
 9.DISTINCT
-10.RDER BY
+10.ORDER BY
 11.TOP
 
 
@@ -65,7 +65,7 @@ comme Maëlys
 
 SELECT V.vehicle_make, COUNT(*)
 FROM VICTIM V, PARTY P, VEHICLE Ve
-WHERE V.case_id = P.case_id AND V.party_number = P.party_number AND P.vehicle_id= Ve.vehicle_id AND (V.victim_degree_of_injury = '1' OR V.victim_degree_of_injury = '2')
+WHERE V.party_id = P.party_id AND P.vehicle_id= Ve.vehicle_id AND (V.victim_degree_of_injury IN ('1','2'))
 GROUP BY V.vehicle_make
 ORDER BY COUNT(*) DESC
 FETCH FIRST 10 ROWS ONLY
@@ -190,7 +190,7 @@ conclusion based on absolute number of accidents in the given 4 periods.
 
 BESOIN DE TROUVER COMMENT EXTRAIRE HEURE SINON C'EST BON
 
-SELECT count(*) num_collisions, time
+SELECT count(*) as num_collisions, time
 FROM
 (select (CASE
 WHEN R.LIGHTING = 'A'
@@ -200,7 +200,7 @@ THEN 'day'
     -- winter hour
     WHEN (extract(month from C.COLLISION_DATE) >= 9 OR  extract(month from C.COLLISION_DATE) <= 3) THEN 'dawn'
 
-END) AS time , C.CASE_ID
+END) AS time ), C.CASE_ID
 FROM COLLISION C, ROAD R
 WHERE C.ROAD_ID = R.ROAD_ID)
 group by time;
