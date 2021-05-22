@@ -1,6 +1,8 @@
 faire attention au count(*)
 
 
+can we just give you a final version of the project or do you prefer to have patch notes ? We've changed a lot the deliverable 1 throughout the project.
+
 collision_in_weather, what is the primary key ? or do we need one ?
 
 

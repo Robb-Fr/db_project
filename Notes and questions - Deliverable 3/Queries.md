@@ -75,14 +75,14 @@ FETCH FIRST 10 ROWS ONLY
 suffered no injury. The position with the highest safety index is the safest, while the one with the lowest
 is the most unsafe. List the most safe and unsafe victim seating position along with its safety index.
 
-(select sum(case when v.VICTIM_DEGREE_OF_INJURY = '0' THEN 1 ELSE 0 END)/count(*) AS Ratio, VW.SAFETY_EQUIPMENT
+(select trunc(sum(case when v.VICTIM_DEGREE_OF_INJURY = '0' THEN 1 ELSE 0 END)/count(*),5) AS Ratio, VW.SAFETY_EQUIPMENT
 from VICTIM_EQUIPPED_WITH VW, VICTIM V
 WHERE v.VICTIM_ID = VW.VICTIM_ID
 group by VW.SAFETY_EQUIPMENT
 order by Ratio DESC
 FETCH FIRST 1 ROW ONLY)
-UNION ALL
-(select sum(case when v.VICTIM_DEGREE_OF_INJURY = '0' THEN 1 ELSE 0 END)/count(*) AS Ratio, VW.SAFETY_EQUIPMENT
+UNION 
+(select trunc(sum(case when v.VICTIM_DEGREE_OF_INJURY = '0' THEN 1 ELSE 0 END)/count(*),5) AS Ratio, VW.SAFETY_EQUIPMENT
 from VICTIM_EQUIPPED_WITH VW, VICTIM V
 WHERE v.VICTIM_ID = VW.VICTIM_ID
 group by VW.SAFETY_EQUIPMENT
@@ -93,15 +93,15 @@ FETCH FIRST 1 ROW ONLY);
 OU ALORS
 
 select
-max(Ratio) keep (dense_rank last order by Ratio) as MAX_RATIO,
+trunc(max(Ratio) keep (dense_rank last order by Ratio),5) as MAX_RATIO,
 max(SAFETY_EQUIPMENT) keep ( dense_rank last order by Ratio ) as BEST_SAFETY,
-min(Ratio) keep (dense_rank first order by Ratio) as MIN_RATIO,
+trunc(min(Ratio) keep (dense_rank first order by Ratio),5) as MIN_RATIO,
 min(SAFETY_EQUIPMENT) keep ( dense_rank first order by Ratio ) as WORST_SAFETY
 from (select sum(case when v.VICTIM_DEGREE_OF_INJURY = '0' THEN 1 ELSE 0 END)/count(*) AS Ratio, VW.SAFETY_EQUIPMENT
 from VICTIM_EQUIPPED_WITH VW, VICTIM V
 WHERE v.VICTIM_ID = VW.VICTIM_ID
 group by VW.SAFETY_EQUIPMENT
-order by Ratio DESC)
+order by Ratio DESC);
 
 
 
@@ -139,11 +139,20 @@ CROSS APPLY
                 order by decode(POPULATION,'7',10, '6',9,'5',8,
                 '4',7,'3',6,'2',5,'1',4,'9',3,'0',2,NULL, 1) DESC
                 FETCH FIRST 3 rows only)
+
+
              on C.COUNTY_CITY_LOCATION = city_code) INNER JOIN PARTY P on P.CASE_ID = C.CASE_ID) INNER JOIN
         VICTIM V on v.PARTY_ID= p.PARTY_ID) temporary
             WHERE temporary.city_code = top_cities.city_code
             order by  avg(VICTIM_AGE) over (partition by temporary.CASE_ID)
             FETCH FIRST 10 rows only) temporary;
+
+
+compute 3 cities, compute statisitics, then compute the row number of the statistics partitioned by city_location ordered by statistics
+
+select row number <= 10.
+
+USE PARTITION BY OVER COUNTY CITY LOCATION AND USE ROW NUMBER
 
 
 7. Find all collisions that satisfy the following: the collision was of type pedestrian and all victims were above

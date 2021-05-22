@@ -1,0 +1,37 @@
+query 2 goodish, create index on collision_in_road_condition(road_condition)  and index on party(case_id)
+
+query 3 good, create index on victim(victim_degree_of_injury)
+
+query 4 less good with index on victim equipped with (victim_id)
+
+query 6 good, create index on victim(party_id) , index on party(case_id) ?
+
+peut etre parler de la query 7 et de la deterioration de la performance avec index on collision(type_of_collision)
+
+
+
+
++--------------------------------------------------------------------------------------------------------------------------+
+|PLAN_TABLE_OUTPUT                                                                                                         |
++--------------------------------------------------------------------------------------------------------------------------+
+|--------------------------------------------------------------------------------------------------------------------------|
+|| Id  | Operation                               | Name                           | Rows  | Bytes | Cost (%CPU)| Time     ||
+|--------------------------------------------------------------------------------------------------------------------------|
+||   0 | SELECT STATEMENT                        |                                |    14 |   994 | 17774   (1)| 00:00:01 ||
+||   1 |  SORT ORDER BY                          |                                |    14 |   994 | 17774   (1)| 00:00:01 ||
+||   2 |   HASH GROUP BY                         |                                |    14 |   994 | 17774   (1)| 00:00:01 ||
+||*  3 |    HASH JOIN                            |                                | 16292 |  1129K| 17773   (1)| 00:00:01 ||
+||   4 |     VIEW                                | VW_GBF_17                      | 18879 |   239K|    68   (0)| 00:00:01 ||
+||*  5 |      TABLE ACCESS FULL                  | VEHICLE                        | 18879 |   129K|    68   (0)| 00:00:01 ||
+||*  6 |     HASH JOIN                           |                                | 19823 |  1122K| 17704   (1)| 00:00:01 ||
+||   7 |      TABLE ACCESS BY INDEX ROWID BATCHED| COLLISION_IN_ROAD_CONDITIONS   |  9989 |   273K|   212   (0)| 00:00:01 ||
+||*  8 |       INDEX RANGE SCAN                  | COLLISION_IN_ROAD_CONDITIONS_I |  9989 |       |    21   (0)| 00:00:01 ||
+||*  9 |      TABLE ACCESS FULL                  | PARTY                          |  7286K|   208M| 17474   (1)| 00:00:01 ||
+|--------------------------------------------------------------------------------------------------------------------------|
++--------------------------------------------------------------------------------------------------------------------------+
+
+
+
+
+
+
